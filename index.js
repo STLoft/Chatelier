@@ -3,7 +3,7 @@ import { DEFAULT_PRESETS, normalizePresets, uniquePresetName, parsePresetBundle,
 const EXT_KEY = 'codexImage';
 const API_BASE = '/api/plugins/codex-image';
 const HISTORY_MAX = 20;
-const CLIENT_VERSION = '1.0.3';
+const CLIENT_VERSION = '1.1.0';
 
 let connectionManagerService = null;
 let connectionManagerLoadError = null;
@@ -104,6 +104,7 @@ let codexModelsLoading = null;
 let codexModelsError = '';
 let customCodexModel = false;
 let presetEditorExpanded = false;
+let cliStatusRefreshTimer = null;
 let profileList = [];
 let inlineMode = true;
 let pendingRangeStart = null;
@@ -988,18 +989,24 @@ function statusMarkup() {
             ? `<span class="cxi-badge good">Vertex 연결됨</span><small>${esc(codexStatus.version || '')}</small>`
             : `<span class="cxi-badge bad">Vertex 연결 안 됨</span><small>${esc(codexStatus.error || '')}</small>`;
     }
+    const autoUpdate = codexStatus.cliAutoUpdate;
+    if (['checking', 'updating'].includes(autoUpdate?.state)) {
+        return `<span class="cxi-badge pending">${autoUpdate.state === 'updating' ? 'Codex CLI 자동 업데이트 중' : 'Codex CLI 업데이트 확인 중'}</span><small>완료되면 상태와 모델 목록을 자동으로 새로고침합니다.</small>`;
+    }
     if (!codexStatus.available) return `<span class="cxi-badge bad">Codex CLI 없음</span><small>${esc(codexStatus.error || '')}</small>`;
     const loginOk = codexStatus.loggedInWithChatGPT === true;
     return `<span class="cxi-badge ${loginOk ? 'good' : 'warn'}">${loginOk ? 'ChatGPT 로그인됨' : 'ChatGPT 로그인 필요'}</span>
         <small>${esc(codexStatus.version || '')}${codexStatus.loginStatus ? ` · ${esc(codexStatus.loginStatus)}` : ''}</small>
         ${codexStatus.imageGenerationFeature ? `<small>${esc(codexStatus.imageGenerationFeature)}</small>` : ''}
+        ${autoUpdate?.state === 'updated' ? '<small>CLI 자동 업데이트 완료</small>' : ''}
+        ${autoUpdate?.error ? `<small>${esc(autoUpdate.error)}</small>` : ''}
         ${codexStatus.updateAvailable ? `<span class="cxi-badge warn">CLI 업데이트 있음 · 최신 ${esc(codexStatus.latestVersion)}</span>
-        <small>서버 터미널에서 Codex CLI를 업데이트한 뒤 다시 확인하세요.</small>
-        ${codexStatus.cliUpdateEnabled ? `<button id="cxi-update-cli" class="menu_button" type="button" title="npm install -g @openai/codex@latest">CLI 업데이트</button>` : ''}` : ''}`;
+        <small>${autoUpdate?.enabled && autoUpdate.state !== 'unsupported' ? 'SillyTavern을 다시 시작하면 자동 업데이트를 다시 시도합니다.' : '서버 터미널에서 Codex CLI를 업데이트한 뒤 다시 확인하세요.'}</small>
+        ${codexStatus.cliUpdateEnabled ? `<button id="cxi-update-cli" class="menu_button" type="button">CLI 업데이트</button>` : ''}` : ''}`;
 }
 
 async function updateCodexCli(button) {
-    if (!confirm(`Codex CLI를 최신 버전(${codexStatus?.latestVersion || '?'})으로 업데이트할까요?\n서버에서 npm install -g @openai/codex@latest 를 실행합니다. 1~2분 걸릴 수 있습니다.`)) return;
+    if (!confirm(`Codex CLI를 최신 버전(${codexStatus?.latestVersion || '?'})으로 업데이트할까요?\n서버에서 현재 환경에 맞는 CLI 패키지를 백업 후 업데이트합니다.`)) return;
     button.disabled = true;
     button.textContent = '업데이트 중…';
     try {
@@ -1206,6 +1213,7 @@ function renderSettings() {
         renderSettings();
     }));
     document.getElementById('cxi-save-settings').addEventListener('click', saveSettingsFromUi);
+    scheduleCliStatusRefresh();
 }
 
 function refCard(slot, label, src) {
@@ -1280,6 +1288,7 @@ async function refreshVertexStatus() {
 
 async function refreshCodexStatus(force = false) {
     if ((settings.engine || 'codex') === 'vertex') return await refreshVertexStatus();
+    const wasUpdating = ['checking', 'updating'].includes(codexStatus?.cliAutoUpdate?.state);
     try {
         codexStatus = await apiFetch(`/status${force ? '?refresh=1' : ''}`);
     } catch (error) {
@@ -1288,8 +1297,22 @@ async function refreshCodexStatus(force = false) {
     if (panelOpen && activeView === 'settings') {
         const el = document.getElementById('cxi-status-text');
         if (el) el.innerHTML = statusMarkup();
+        if (wasUpdating && !['checking', 'updating'].includes(codexStatus?.cliAutoUpdate?.state)) {
+            codexModelsError = '';
+            refreshCodexModels();
+        }
     }
+    scheduleCliStatusRefresh();
     return codexStatus;
+}
+
+function scheduleCliStatusRefresh() {
+    clearTimeout(cliStatusRefreshTimer);
+    if (panelOpen && activeView === 'settings' && settings.engine !== 'vertex' && ['checking', 'updating'].includes(codexStatus?.cliAutoUpdate?.state)) {
+        cliStatusRefreshTimer = setTimeout(() => {
+            if (panelOpen && activeView === 'settings') refreshCodexStatus(false);
+        }, 2000);
+    }
 }
 
 async function getConnectionManagerService() {

@@ -155,7 +155,9 @@ git -C plugins/Chatelier-Bridge pull --ff-only
 3. SillyTavern **서버를 종료 후 다시 시작**합니다.
 4. 브라우저를 새로고침합니다.
 
-서버의 `enableServerPluginsAutoUpdate` 설정이 켜져 있으면 Git으로 설치한 서버 플러그인의 업데이트를 시작 시 확인합니다. 확장과 서버 플러그인은 별도로 업데이트되므로 함께 확인하세요. Codex CLI 업데이트는 [서버 플러그인 안내](https://github.com/STLoft/Chatelier-Bridge#업데이트)를 따릅니다.
+서버의 `enableServerPluginsAutoUpdate` 설정이 켜져 있으면 Git으로 설치한 서버 플러그인의 업데이트를 시작 시 확인합니다. 확장과 서버 플러그인은 별도로 업데이트되므로 함께 확인하세요.
+
+Codex CLI도 기본적으로 서버 시작 시 새 버전을 확인하고 자동 업데이트합니다. npm으로 설치된 해당 환경의 패키지만 대상으로 하며, 업데이트 전 패키지 파일을 백업합니다. 설정 화면에서 진행 상태를 확인할 수 있고 완료되면 모델 목록이 자동으로 새로고침됩니다. 설치 방식별 조건과 비활성화 방법은 [서버 플러그인 안내](https://github.com/STLoft/Chatelier-Bridge#codex-cli-자동-업데이트)를 참고하세요.
 
 ## 문제 해결
 
