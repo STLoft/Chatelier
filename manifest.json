@@ -1,0 +1,15 @@
+{
+  "display_name": "Chatelier",
+  "loading_order": 120,
+  "requires": [],
+  "optional": [],
+  "js": "index.js",
+  "css": "style.css",
+  "author": "STLoft",
+  "version": "1.0.0",
+  "homePage": "https://github.com/STLoft/Chatelier",
+  "auto_update": true,
+  "hooks": {
+    "activate": "init"
+  }
+}

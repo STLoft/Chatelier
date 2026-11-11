@@ -1,0 +1,8 @@
+node_modules/
+*.bak
+*.log
+.env
+.env.*
+auth.json
+output/
+workspace/

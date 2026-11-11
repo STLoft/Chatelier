@@ -1,0 +1,10 @@
+{
+  "name": "chatelier",
+  "version": "1.0.0",
+  "private": true,
+  "author": "STLoft",
+  "description": "Image generation and personal prompt presets for SillyTavern",
+  "repository": { "type": "git", "url": "https://github.com/STLoft/Chatelier.git" },
+  "type": "module",
+  "scripts": { "test": "node --test test/*.test.mjs", "check": "node --check index.js" }
+}
