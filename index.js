@@ -3,7 +3,7 @@ import { DEFAULT_PRESETS, normalizePresets, uniquePresetName, parsePresetBundle,
 const EXT_KEY = 'codexImage';
 const API_BASE = '/api/plugins/codex-image';
 const HISTORY_MAX = 20;
-const CLIENT_VERSION = '1.0.2';
+const CLIENT_VERSION = '1.0.3';
 
 let connectionManagerService = null;
 let connectionManagerLoadError = null;

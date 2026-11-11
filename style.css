@@ -385,7 +385,7 @@
 .cxi-empty h3 { font-size: 19px; line-height: 1.4; letter-spacing: -.035em; margin: 8px 0 14px; }
 .cxi-eyebrow { color: var(--cxi-muted); font-size: 10px; font-weight: 650; letter-spacing: .14em; }
 .cxi-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
-.cxi-prompt-editor { text-align: left; }
+.cxi-prompt-editor { width: 100%; min-width: 0; box-sizing: border-box; align-self: stretch; text-align: left; }
 .cxi-preset-edit { margin-top: 12px; }
 .cxi-preset-edit > summary { cursor: pointer; color: var(--cxi-muted); font-size: 12px; }
 .cxi-prompt-editor textarea { margin-top: 10px !important; min-height: 132px; }
