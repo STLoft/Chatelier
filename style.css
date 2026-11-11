@@ -386,6 +386,8 @@
 .cxi-eyebrow { color: var(--cxi-muted); font-size: 10px; font-weight: 650; letter-spacing: .14em; }
 .cxi-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
 .cxi-prompt-editor { text-align: left; }
+.cxi-preset-edit { margin-top: 12px; }
+.cxi-preset-edit > summary { cursor: pointer; color: var(--cxi-muted); font-size: 12px; }
 .cxi-prompt-editor textarea { margin-top: 10px !important; min-height: 132px; }
 .cxi-preset-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 :is(#cxi-root, #cxi-inline-wrap) .cxi-preset-tools .menu_button { font-size: 11px !important; padding: 7px 10px !important; }

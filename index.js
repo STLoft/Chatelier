@@ -3,7 +3,7 @@ import { DEFAULT_PRESETS, normalizePresets, uniquePresetName, parsePresetBundle,
 const EXT_KEY = 'codexImage';
 const API_BASE = '/api/plugins/codex-image';
 const HISTORY_MAX = 20;
-const CLIENT_VERSION = '1.0.1';
+const CLIENT_VERSION = '1.0.2';
 
 let connectionManagerService = null;
 let connectionManagerLoadError = null;
@@ -103,6 +103,7 @@ let codexModelsLoaded = false;
 let codexModelsLoading = null;
 let codexModelsError = '';
 let customCodexModel = false;
+let presetEditorExpanded = false;
 let profileList = [];
 let inlineMode = true;
 let pendingRangeStart = null;
@@ -630,10 +631,12 @@ function bindSourcePicker() {
 
 function presetEditorMarkup() {
     const preset = settings.presets[settings.activePreset];
+    const compact = activeView !== 'settings';
     return `<section class="cxi-section cxi-prompt-editor">
-        <div class="cxi-section-heading"><b>내 프롬프트</b><span class="cxi-small cxi-muted">사용자 프리셋</span></div>
+        <div class="cxi-section-heading"><b>프리셋</b></div>
         <label class="cxi-sr-only" for="cxi-preset-select">프리셋 선택</label>
         <select id="cxi-preset-select">${settings.presets.map((p, i) => `<option value="${i}" ${i === settings.activePreset ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select>
+        ${compact ? `<details id="cxi-preset-edit" class="cxi-preset-edit" ${presetEditorExpanded ? 'open' : ''}><summary>프롬프트 편집</summary>` : ''}
         <label class="cxi-sr-only" for="cxi-preset-body">이미지 프롬프트</label>
         <textarea id="cxi-preset-body" rows="6" maxlength="30000" placeholder="원하는 화풍과 지시문을 적으세요. 대화 장면은 자동으로 붙습니다.">${esc(preset.body)}</textarea>
         <p class="cxi-small cxi-muted">화풍과 지시문만 적어도 됩니다. {scene}으로 장면이 들어갈 위치를 지정할 수도 있습니다.</p>
@@ -652,6 +655,7 @@ function presetEditorMarkup() {
             <p class="cxi-small cxi-muted">공유 파일에는 이름과 프롬프트만 포함됩니다. 직접 적은 개인정보는 내보내기 전에 확인하세요.</p>
             <p class="cxi-small cxi-muted">API 프로필 장면 정리를 사용할 때: {bg} 배경 · {char} 인물 · {outfit} 의상 · {comp} 구도</p>
         </details>
+        ${compact ? '</details>' : ''}
     </section>`;
 }
 
@@ -662,6 +666,7 @@ function capturePresetDraft() {
 
 function bindPresetEditor() {
     const on = (id, event, handler) => document.getElementById(id)?.addEventListener(event, handler);
+    on('cxi-preset-edit', 'toggle', event => { presetEditorExpanded = event.target.open; });
     const rerender = async () => { captureSettingsDraft(); await saveSettings(); render(); };
     on('cxi-preset-body', 'input', () => { capturePresetDraft(); saveSettings(); });
     on('cxi-preset-save', 'click', async () => { capturePresetDraft(); await saveSettings(); toast('success', '프리셋을 저장했습니다.'); });
@@ -2011,6 +2016,7 @@ async function handleGenerate() {
         showView('result');
         return;
     }
+    presetEditorExpanded = false;
     showView('result');
     runningController = new AbortController();
     const signal = runningController.signal;
