@@ -237,7 +237,7 @@ function mountSettingsEntry() {
     entry.className = 'inline-drawer';
     entry.innerHTML = `
         <div class="inline-drawer-toggle inline-drawer-header">
-            <b>Chatelier</b>
+            <b>🎨 Chatelier</b>
             <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
         </div>
         <div class="inline-drawer-content">
