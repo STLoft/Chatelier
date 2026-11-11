@@ -3,7 +3,7 @@ import { DEFAULT_PRESETS, normalizePresets, uniquePresetName, parsePresetBundle,
 const EXT_KEY = 'codexImage';
 const API_BASE = '/api/plugins/codex-image';
 const HISTORY_MAX = 20;
-const CLIENT_VERSION = '1.0.0';
+const CLIENT_VERSION = '1.0.1';
 
 let connectionManagerService = null;
 let connectionManagerLoadError = null;
@@ -985,7 +985,7 @@ function statusMarkup() {
     }
     if (!codexStatus.available) return `<span class="cxi-badge bad">Codex CLI 없음</span><small>${esc(codexStatus.error || '')}</small>`;
     const loginOk = codexStatus.loggedInWithChatGPT === true;
-    return `<span class="cxi-badge ${loginOk ? 'good' : 'warn'}">${loginOk ? 'ChatGPT OAuth 로그인됨' : 'ChatGPT OAuth 로그인 필요'}</span>
+    return `<span class="cxi-badge ${loginOk ? 'good' : 'warn'}">${loginOk ? 'ChatGPT 로그인됨' : 'ChatGPT 로그인 필요'}</span>
         <small>${esc(codexStatus.version || '')}${codexStatus.loginStatus ? ` · ${esc(codexStatus.loginStatus)}` : ''}</small>
         ${codexStatus.imageGenerationFeature ? `<small>${esc(codexStatus.imageGenerationFeature)}</small>` : ''}
         ${codexStatus.updateAvailable ? `<span class="cxi-badge warn">CLI 업데이트 있음 · 최신 ${esc(codexStatus.latestVersion)}</span>
@@ -1065,7 +1065,7 @@ function renderSettings() {
             <h4 class="cxi-section-title">생성 설정</h4>
             <label>이미지 엔진
                 <select id="cxi-engine">
-                    <option value="codex" ${settings.engine !== 'vertex' ? 'selected' : ''}>Codex CLI (ChatGPT OAuth)</option>
+                    <option value="codex" ${settings.engine !== 'vertex' ? 'selected' : ''}>Codex CLI (ChatGPT 로그인)</option>
                     <option value="vertex" ${settings.engine === 'vertex' ? 'selected' : ''}>Vertex AI (Express Key)</option>
                 </select>
             </label>

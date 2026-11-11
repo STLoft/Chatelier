@@ -1,6 +1,6 @@
 {
   "name": "chatelier",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "author": "STLoft",
   "description": "Image generation and personal prompt presets for SillyTavern",
